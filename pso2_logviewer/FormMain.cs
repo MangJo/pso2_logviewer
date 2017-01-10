@@ -15,41 +15,75 @@ namespace pso2_logviewer
 {
     public partial class FormMain : Form
     {
+        //Settings appSettings = new Settings();
+
         public FormMain()
         {
             InitializeComponent();
 
-            //test case
-            //check file if exists
-            try
-            {
-                // StreamReader sr = new StreamReader(Application.UserAppDataPath + "/settings.xml");
-                // might use some kind of html like encodings for space or other chars
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(Application.UserAppDataPath + "/settings.xml");
+            //richTextBox1.Font = new Font("Arial", 11f, FontStyle.Regular);
+            //richTextBox1.BackColor = Color.AliceBlue;
+            Settings.loadSettings();
+            loadTxtFilesToListBox(listBox1, Settings.logPathDir, "ChatLog*");
+        }
 
-                XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/settings");
-                string proID = "";
-                foreach (XmlNode node in nodeList)
+        public void loadTxtFilesToListBox(ListBox list_box_object, string folder, string filename)
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(folder);
+            FileInfo[] files = dirInfo.GetFiles(filename);
+            foreach(FileInfo file in files)
+            {
+                list_box_object.Items.Add(file.Name);
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //experimental 
+            string temp = Settings.logPathDir + "\\" + listBox1.SelectedItem;
+
+            //the goal of this portion of code is to apply color to the text
+            //according to wether its PUBLIC, GUILD, PARTY or REPLY chats
+            //this implementation is so slow :v 
+            //kinda want to think another approach.
+            //also it skips text lines without date chat type and playername
+            //store into a placeholder RTB control
+            RichTextBox rtb_temp = new RichTextBox();
+            rtb_temp.LoadFile(temp, RichTextBoxStreamType.UnicodePlainText);
+            //listBox1.SelectedIndex
+
+            richTextBox1.Clear();
+            richTextBox1.BackColor = Color.Black;
+            foreach (string line_of_text in rtb_temp.Lines)
+            {
+                //MessageBox.Show(line_of_text);
+                if (line_of_text.Contains("PUBLIC"))
                 {
-                    proID = node.SelectSingleNode("dirpath").InnerText;
-                    MessageBox.Show(proID + " ");
+                    // MessageBox.Show("found public" + line_of_text.Length);
+                    
+                    richTextBox1.SelectionColor = Color.White;
+                    richTextBox1.AppendText(line_of_text);
+                    richTextBox1.AppendText("\n");
+                }
+                else if (line_of_text.Contains("PARTY"))
+                {
+                    richTextBox1.SelectionColor = Color.Aqua;
+                    richTextBox1.AppendText(line_of_text);
+                    richTextBox1.AppendText("\n");
+                }
+                else if (line_of_text.Contains("GUILD"))
+                {
+                    richTextBox1.SelectionColor = Color.Orange;
+                    richTextBox1.AppendText(line_of_text);
+                    richTextBox1.AppendText("\n");
+                }
+                else if (line_of_text.Contains("REPLY"))
+                {
+                    richTextBox1.SelectionColor = Color.Violet;
+                    richTextBox1.AppendText(line_of_text);
+                    richTextBox1.AppendText("\n");
                 }
             }
-            catch (Exception ex)
-            {
-                // MessageBox.Show("config.cfg doesn't exists pls locate log directory");
-                MessageBox.Show(ex.ToString());
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                dialog.InitialDirectory = Application.UserAppDataPath;
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    // MessageBox.Show(dialog.FileName);
-                    // after selecting folder, the app will save the info as an XML data saved into userappDataPath
-                    // then loads it
-                }
-            }  
         }
     }
 }
