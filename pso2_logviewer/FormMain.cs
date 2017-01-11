@@ -15,45 +15,69 @@ namespace pso2_logviewer
 {
     public partial class FormMain : Form
     {
-        //Settings appSettings = new Settings();
-
         public FormMain()
         {
             InitializeComponent();
+            
+            refreshContents();
+        }
 
-            //richTextBox1.Font = new Font("Arial", 11f, FontStyle.Regular);
-            //richTextBox1.BackColor = Color.AliceBlue;
-            Settings.loadSettings();
-            loadTxtFilesToListBox(listBox1, Settings.logPathDir, "ChatLog*");
+        private void refreshContents()
+        {
+            if(Settings.loadSettings())
+            {
+                labelCurrentFolder.Text = Settings.logPathDir;
+                loadTxtFilesToListBox(listBox1, Settings.logPathDir, "ChatLog*");
+                statusStrip1.Items[0].Text = "Found " + listBox1.Items.Count + " text files.";
+            }
+            else
+            {
+               if( Settings.saveSettings(Settings.selectFolder()))
+                {
+                    refreshContents();
+                }
+            }
+
         }
 
         public void loadTxtFilesToListBox(ListBox list_box_object, string folder, string filename)
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(folder);
-            FileInfo[] files = dirInfo.GetFiles(filename);
-            foreach(FileInfo file in files)
+            if (list_box_object.Items.Count >= 0)
             {
-                list_box_object.Items.Add(file.Name);
+                list_box_object.Items.Clear();
+                DirectoryInfo dirInfo = new DirectoryInfo(folder);
+                FileInfo[] files = dirInfo.GetFiles(filename);
+                foreach (FileInfo file in files)
+                {
+                    list_box_object.Items.Add(file.Name);
+                }
             }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //experimental 
+            //EXPERIMENTAL 
             string temp = Settings.logPathDir + "\\" + listBox1.SelectedItem;
 
-            //the goal of this portion of code is to apply color to the text
-            //according to wether its PUBLIC, GUILD, PARTY or REPLY chats
-            //this implementation is so slow :v 
-            //kinda want to think another approach.
-            //also it skips text lines without date chat type and playername
+            //The code's GOAL in this part is to LOAD the contents of the text
+            //file into a container such as RICHTEXTBOX or DATAGRIDVIEW for
+            //this app's purpose.
+
+            //The CURRENT implementation right now delivers the desired output
+            //BUT it is slow as it updates the view of the RTB every appended line
+            //AND IS not feasible for other intended features like FILTERING,
+            //SEARCHING, etc,.
+
+            //You might want to try to use DATAGRIDVIEW
+            //but please make a BRANCH off from the git.
+
             //store into a placeholder RTB control
             RichTextBox rtb_temp = new RichTextBox();
             rtb_temp.LoadFile(temp, RichTextBoxStreamType.UnicodePlainText);
             //listBox1.SelectedIndex
 
             richTextBox1.Clear();
-            richTextBox1.BackColor = Color.Black;
+            richTextBox1.BackColor = Color.FromArgb(30,25,25);
             foreach (string line_of_text in rtb_temp.Lines)
             {
                 //MessageBox.Show(line_of_text);
@@ -83,7 +107,23 @@ namespace pso2_logviewer
                     richTextBox1.AppendText(line_of_text);
                     richTextBox1.AppendText("\n");
                 }
+                else
+                {
+                    richTextBox1.SelectionColor = Color.White;
+                    richTextBox1.AppendText(line_of_text);
+                    richTextBox1.AppendText("\n");
+                }
             }
         }
+
+        private void btnChangeFolder_Click(object sender, EventArgs e)
+        {
+            if (Settings.saveSettings(Settings.selectFolder()))
+            {
+                refreshContents();
+            }
+        }
+
+
     }
 }

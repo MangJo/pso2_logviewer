@@ -32,55 +32,79 @@ namespace pso2_logviewer
             }
         }
 
-        public static void loadSettings()
+        public static bool loadSettings()
         {
             if (settingsFileExists(Application.UserAppDataPath + "/settings.xml"))
             {
-                // StreamReader sr = new StreamReader(Application.UserAppDataPath + "/settings.xml");
-                // might use some kind of html like encodings for space or other chars
+                // Load the settings file (XML File)
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(Application.UserAppDataPath + "/settings.xml");
 
                 XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/settings");
-                //string proID = "";
                 foreach (XmlNode node in nodeList)
                 {
                     logPathDir = node.SelectSingleNode("dirpath").InnerText;
-                    //test = proID;
-                    //MessageBox.Show(test);
                 }
-                //REFACTOR
+                //If the settings was loaded successfully, return true.
+                return true;
             }
             else
             {
+                //If settings was not loaded, return false.
                 MessageBox.Show("Please select the the PSO2 log directory folder.");
-                saveSettings();
+                //saveSettings();
+
+                return false;
             }
         }
 
-        public static void saveSettings()
+        public static string selectFolder()
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = Application.UserAppDataPath;
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+
+            if (logPathDir != null)
             {
-                // MessageBox.Show(dialog.FileName);
-                // after selecting folder, the app will save the info as an XML data saved into userappDataPath
-                // then loads it
+                dialog.InitialDirectory = logPathDir;
+            }
+            else
+            {
+                dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
+
+            dialog.IsFolderPicker = true;
+            if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                return dialog.FileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static bool saveSettings(string folder_name)
+        {
+
+            if (folder_name != null)
+            {
+                // If there is a folder selected, save the dirPath string in an XML File.
                 using (XmlWriter writer = XmlWriter.Create(Application.UserAppDataPath + "/settings.xml"))
                 {
                     writer.WriteStartDocument();
                     writer.WriteStartElement("settings");
 
-                    writer.WriteElementString("dirpath", dialog.FileName);
+                    writer.WriteElementString("dirpath", folder_name);
 
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
-                    //REFACTOR
                 }
-                MessageBox.Show("You have selected : " + dialog.FileName);
-                loadSettings();
+                MessageBox.Show("You have selected : " + folder_name);
+                return true;
+            }
+            else
+            {
+                //MessageBox.Show("Please select the log folder in order to work properly.");
+                return false;
             }
         }
     }
