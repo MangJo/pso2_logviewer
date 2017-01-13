@@ -20,21 +20,9 @@ namespace pso2_logviewer
            
         }*/
 
-        private static bool settingsFileExists(string file_name)
-        {
-            if ( File.Exists(file_name))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public static bool loadSettings()
         {
-            if (settingsFileExists(Application.UserAppDataPath + "/settings.xml"))
+            if (File.Exists(Application.UserAppDataPath + "/settings.xml"))
             {
                 // Load the settings file (XML File)
                 XmlDocument xmlDoc = new XmlDocument();
@@ -51,7 +39,7 @@ namespace pso2_logviewer
             else
             {
                 //If settings was not loaded, return false.
-                MessageBox.Show("Please select the the PSO2 log directory folder.");
+                MessageBox.Show("Please select the PSO2 log directory folder.");
                 //saveSettings();
 
                 return false;
