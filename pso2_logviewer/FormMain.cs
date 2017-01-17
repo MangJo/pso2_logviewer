@@ -15,6 +15,8 @@ namespace pso2_logviewer
 {
     public partial class FormMain : Form
     {
+        DataTable dt_txtfiles = new DataTable();
+
         public FormMain()
         {
             InitializeComponent();
@@ -27,7 +29,11 @@ namespace pso2_logviewer
             if(Settings.loadSettings())
             {
                 labelCurrentFolder.Text = Settings.logPathDir;
-                loadTxtFilesToDGV_List(dataGridView1, Settings.logPathDir, "ChatLog*");
+                //loadTxtFilesToDGV_List(dataGridView1, Settings.logPathDir, "ChatLog*");
+                
+                dt_txtfiles = loadTxtFiles_as_dataTable(Settings.logPathDir, "ChatLog*");
+                dataGridView1.DataSource = dt_txtfiles;
+
                 statusStrip1.Items[0].Text = "Found " + dataGridView1.RowCount + " text files.";
             }
             else
@@ -40,7 +46,7 @@ namespace pso2_logviewer
 
         }
 
-        public void loadTxtFilesToDGV_List(DataGridView data_grid_view, string folder, string filename)
+        private void loadTxtFilesToDGV_List(DataGridView data_grid_view, string folder, string filename)
         {
             if (data_grid_view.RowCount >= 0)
             {
@@ -54,18 +60,23 @@ namespace pso2_logviewer
             }
         }
 
-        public void loadTxtFilesToListBox(ListBox list_box_object, string folder, string filename)
+        //EXPERIMENTAL: Load Text files list into a DataTable
+        private DataTable loadTxtFiles_as_dataTable(string folder, string filename)
         {
-            if (list_box_object.Items.Count >= 0)
+            DataTable dt = new DataTable("txtFilesList");
+
+            dt.Columns.Add("Logs");
+
+            DirectoryInfo dirInfo = new DirectoryInfo(folder);
+            FileInfo[] files = dirInfo.GetFiles(filename);
+            foreach (FileInfo file in files)
             {
-                list_box_object.Items.Clear();
-                DirectoryInfo dirInfo = new DirectoryInfo(folder);
-                FileInfo[] files = dirInfo.GetFiles(filename);
-                foreach (FileInfo file in files)
-                {
-                    list_box_object.Items.Add(file.Name);
-                }
+                DataRow dr = dt.NewRow();
+                dr[0] = file.Name;
+                dt.Rows.Add(dr);
             }
+
+            return dt;
         }
 
         private void btnChangeFolder_Click(object sender, EventArgs e)
@@ -78,8 +89,14 @@ namespace pso2_logviewer
 
         private void loadChatTextContents()
         {
-            //Experimental: UNSTABLE/BAD IMPLEMENTATION 
+            //Experimental Implementation
             string temp = Settings.logPathDir + "\\" + dataGridView1.CurrentCell.Value;
+
+            if (File.Exists(temp) == false)
+            {
+                MessageBox.Show("Ooops, it seems this log file doesn't exist, another app might removed it from the directory","No file found", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
 
             //Create column names
             String[] columnNames = new String[]
@@ -90,7 +107,7 @@ namespace pso2_logviewer
             //Create DataTable
             DataTable dt = new DataTable();
 
-            //Add columns and apply column names
+            //Add columns and apply column names. Code Refactor as addColumnNamesToDataTable(DataTable data_table, String[] column_names)
             foreach (string column_name in columnNames)
             {
                 dt.Columns.Add(column_name);
@@ -119,7 +136,7 @@ namespace pso2_logviewer
                     {
                         if (values.Length > 1)
                             dr[i] = values[i];
-                        //This one is a tricky, there are chat lines that uses newline as in continuation
+                        //This one is a tricky, there are text lines that uses newline as in continuation
                         //of previous chat on a new line (hard to explain in words lol)
                         //something like this:
                         //Chat: I'm selling this
@@ -128,6 +145,8 @@ namespace pso2_logviewer
 
                         //Instead of being 1 line:
                         //Chat: I'm selling this Item for 500M
+                        //[5] is the index number for chat column, [0] is the newline text
+                        //it is originally for datetime column
                         else
                         {
                             dr[5] = values[0];
@@ -138,17 +157,6 @@ namespace pso2_logviewer
                 dataGridView2.DataSource = dt;
                 //dataGridView2.Refresh();
             }
-
-            //Coloring the text of the row according to its chat type
-            dataGridView2.DefaultCellStyle.BackColor = Color.Black;
-
-            var chatTypeColor = new Dictionary<string, Color>();
-            chatTypeColor.Add("PUBLIC", Color.White);
-            chatTypeColor.Add("PARTY", Color.Aqua);
-            chatTypeColor.Add("GUILD", Color.Orange);
-            chatTypeColor.Add("REPLY", Color.Violet);
-
-            colorizeRow_ChatLine(dataGridView2, 2, chatTypeColor);
         }
 
         private void colorizeRow_ChatLine(DataGridView dgv, int colIndex, Dictionary<string, Color> chat_type_color)
@@ -187,6 +195,37 @@ namespace pso2_logviewer
             }
         }
 
+        private void applyTextColorOnDGV()
+        {
+            //Coloring the text of the row according to its chat type
+            dataGridView2.DefaultCellStyle.BackColor = Color.Black;
+
+            var chatTypeColor = new Dictionary<string, Color>();
+            chatTypeColor.Add("PUBLIC", Color.White);
+            chatTypeColor.Add("PARTY", Color.Aqua);
+            chatTypeColor.Add("GUILD", Color.Orange);
+            chatTypeColor.Add("REPLY", Color.Violet);
+
+            colorizeRow_ChatLine(dataGridView2, 2, chatTypeColor);
+        }
+
+        //you may want to add code for storing and loading checked values on an XML file
+        private void HideUnhide_DGVColumns_by_checkBox(CheckBox check_box, DataGridView dgv, int column_index)
+        {
+            if(dgv.ColumnCount == 0)
+            {
+                return;
+            }
+
+            if (check_box.Checked == true)
+            {
+                dgv.Columns[column_index].Visible = true;
+            } else
+            {
+                dgv.Columns[column_index].Visible = false;
+            }
+        }
+
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             loadChatTextContents();
@@ -195,6 +234,64 @@ namespace pso2_logviewer
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
         {
            // loadChatTextContents();
+        }
+
+        private void dataGridView2_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            applyTextColorOnDGV();
+        }
+
+        //EXPERIMENTAL
+        private void doSearch(DataTable data_table, DataGridView dgv, string column_name, string search_text)
+        {
+            if (data_table != null)
+            {
+                DataView local_dv = new DataView(data_table);
+                local_dv.RowFilter = column_name + " like '%" + search_text + "%'";
+                dgv.DataSource = local_dv;
+            }
+            else
+            {
+                MessageBox.Show("No results found.", "Search", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #region CHECKBOXES
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox1, dataGridView2, 0);
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox2, dataGridView2, 1);
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox3, dataGridView2, 2);
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox4, dataGridView2, 3);
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox5, dataGridView2, 4);
+        }
+
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            HideUnhide_DGVColumns_by_checkBox(checkBox6, dataGridView2, 5);
+        }
+        #endregion
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            doSearch(dt_txtfiles, dataGridView1, "Logs", textBox1.Text);
+            statusStrip1.Items[0].Text = "Found " + dataGridView1.RowCount + " text files.";
         }
     }
 }

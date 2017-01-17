@@ -39,7 +39,7 @@ namespace pso2_logviewer
             else
             {
                 //If settings was not loaded, return false.
-                MessageBox.Show("Please select the PSO2 log directory folder.");
+                MessageBox.Show("Please select the PSO2 log directory folder.", "Select Folder", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //saveSettings();
 
                 return false;
