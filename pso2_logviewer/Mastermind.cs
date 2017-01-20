@@ -18,6 +18,10 @@ namespace pso2_logviewer
         //and it is just a small app, I used a ComboBox to contain collections of ColumnNames.
         public static void doSearch(DataTable data_table, DataGridView dgv, string column_name, string search_text)
         {
+            if (dgv.RowCount == 0)
+            {
+                return;
+            }
             if (data_table != null)
             {
                 DataView local_dv = new DataView(data_table);
