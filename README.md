@@ -15,3 +15,7 @@ The features of this app are simple:
 -You can choose what to display i.e. date, playername, playerID etc.
 -Simple search both text list files and log contents.
 -You can select a different folder where the logs are stored.
+
+Requirements:
+This app requires Microsoft .NET Framework 4.5
+and Microsoft WindowsAPICodePack to work properly.
