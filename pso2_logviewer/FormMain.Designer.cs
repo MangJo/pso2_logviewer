@@ -295,8 +295,8 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(152, 17);
+            this.toolStripStatusLabel1.Text = "Please locate the log folder.";
             // 
             // FormMain
             // 
@@ -307,6 +307,7 @@
             this.Controls.Add(this.labelCurrentFolder);
             this.Controls.Add(this.btnChangeFolder);
             this.Controls.Add(this.tabControl1);
+            this.MinimumSize = new System.Drawing.Size(960, 480);
             this.Name = "FormMain";
             this.Text = "PSO2 Log Viewer";
             this.Load += new System.EventHandler(this.FormMain_Load);
