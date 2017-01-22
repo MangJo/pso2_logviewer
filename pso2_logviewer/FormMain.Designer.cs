@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageChat = new System.Windows.Forms.TabPage();
             this.grpBox_Contents = new System.Windows.Forms.GroupBox();
@@ -46,7 +47,10 @@
             this.btnChangeFolder = new System.Windows.Forms.Button();
             this.labelCurrentFolder = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tss_totalFiles = new System.Windows.Forms.ToolStripStatusLabel();
+            this.link_About = new System.Windows.Forms.LinkLabel();
+            this.img_About = new System.Windows.Forms.PictureBox();
+            this.tss_stopwatch = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
             this.tabPageChat.SuspendLayout();
             this.grpBox_Contents.SuspendLayout();
@@ -54,6 +58,7 @@
             this.grpBox_txtFileList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_textList)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.img_About)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -285,28 +290,63 @@
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.tss_totalFiles,
+            this.tss_stopwatch});
             this.statusStrip1.Location = new System.Drawing.Point(0, 499);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1008, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // tss_totalFiles
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(152, 17);
-            this.toolStripStatusLabel1.Text = "Please locate the log folder.";
+            this.tss_totalFiles.Name = "tss_totalFiles";
+            this.tss_totalFiles.Size = new System.Drawing.Size(152, 17);
+            this.tss_totalFiles.Text = "Please locate the log folder.";
+            // 
+            // link_About
+            // 
+            this.link_About.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.link_About.AutoSize = true;
+            this.link_About.Location = new System.Drawing.Point(948, 45);
+            this.link_About.Name = "link_About";
+            this.link_About.Size = new System.Drawing.Size(44, 13);
+            this.link_About.TabIndex = 4;
+            this.link_About.TabStop = true;
+            this.link_About.Text = "ABOUT";
+            this.link_About.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_About_LinkClicked);
+            // 
+            // img_About
+            // 
+            this.img_About.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.img_About.BackColor = System.Drawing.Color.Transparent;
+            this.img_About.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.img_About.Image = global::pso2_logviewer.Properties.Resources.pso2_chat_img;
+            this.img_About.Location = new System.Drawing.Point(945, 7);
+            this.img_About.Name = "img_About";
+            this.img_About.Size = new System.Drawing.Size(48, 48);
+            this.img_About.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.img_About.TabIndex = 5;
+            this.img_About.TabStop = false;
+            this.img_About.Click += new System.EventHandler(this.img_About_Click);
+            // 
+            // tss_stopwatch
+            // 
+            this.tss_stopwatch.Name = "tss_stopwatch";
+            this.tss_stopwatch.Size = new System.Drawing.Size(0, 17);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1008, 521);
+            this.Controls.Add(this.link_About);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.labelCurrentFolder);
             this.Controls.Add(this.btnChangeFolder);
             this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.img_About);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(960, 480);
             this.Name = "FormMain";
             this.Text = "PSO2 Log Viewer";
@@ -321,6 +361,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_textList)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.img_About)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -336,7 +377,7 @@
         private System.Windows.Forms.Button btnChangeFolder;
         private System.Windows.Forms.Label labelCurrentFolder;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel tss_totalFiles;
         private System.Windows.Forms.DataGridView dgv_textList;
         private System.Windows.Forms.DataGridView dgv_logContents;
         private System.Windows.Forms.CheckBox cb_Chat;
@@ -347,6 +388,9 @@
         private System.Windows.Forms.CheckBox cb_Date;
         private System.Windows.Forms.TextBox txtBox_ContentsFilter;
         private System.Windows.Forms.ComboBox comBox_ColNames;
+        private System.Windows.Forms.LinkLabel link_About;
+        private System.Windows.Forms.PictureBox img_About;
+        private System.Windows.Forms.ToolStripStatusLabel tss_stopwatch;
     }
 }
 

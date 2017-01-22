@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.IO;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Xml;
+//using System.Diagnostics;
+//using System.Threading;
 
 namespace pso2_logviewer
 {
@@ -18,6 +20,7 @@ namespace pso2_logviewer
         //All of the retrieved data are stored in a DataTable object.
         DataTable dt_txtfiles = new DataTable();
         DataTable dt_txtcontents = new DataTable();
+        //Stopwatch stop_watch = new Stopwatch();
 
         String[] columnNames = new String[] {"DateTime", "ChatLine", "ChatType", "PlayerID", "CharName", "Chat"};
 
@@ -33,7 +36,7 @@ namespace pso2_logviewer
             {
                 labelCurrentFolder.Text = Settings.logPathDir;
                 //loadTxtFilesToDGV_List(dataGridView1, Settings.logPathDir, "ChatLog*");
-
+                txtBox_TxtFileListFilter.Clear();
                 dt_txtfiles = Mastermind.loadTxtFiles_as_dataTable(Settings.logPathDir, "ChatLog*");
                 dgv_textList.DataSource = dt_txtfiles;
 
@@ -58,6 +61,8 @@ namespace pso2_logviewer
 
         private DataTable loadChatTextContents()
         {
+            if(dgv_textList.RowCount == 0) { return null; }
+
             //Store logPathDir value in a string variable.
             string text_filename = Settings.logPathDir + "\\" + dgv_textList.CurrentCell.Value;
 
@@ -78,6 +83,8 @@ namespace pso2_logviewer
             //Use a DataRow to hold all the data read from the line.
             //After insertion of data into the DataRow, append the DataRow into the DataTable
             //Repeat until the End Of Stream
+
+            //stop_watch.Start();
             using (StreamReader sr = new StreamReader(text_filename))
             {
                 StringBuilder strBuilder = new StringBuilder(); //Holds the text from a linebroke chat (Some chats contain \r\n as in breaking down continuous text with a linebreak)
@@ -127,9 +134,11 @@ namespace pso2_logviewer
                         //Chat: I'm selling this one Item for 500M only.
                         //This problem has been fixed or a work around has been implemented, please see the above comments.
                     }
+                    //Thread.Sleep(1);
                     dt.Rows.Add(dr);
                 }
 
+                //stop_watch.Stop();
                 return dt;
                 //dataGridView2.DataSource = dt;
                 //dataGridView2.Refresh();
@@ -162,6 +171,7 @@ namespace pso2_logviewer
         private void dataGridView2_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             applyTextColorOnDGV_contents();
+            //tss_stopwatch.Text = String.Format("Time elapsed: {0:hh\\:mm\\:ss}", stop_watch.Elapsed);
         }
 
         #region CHECKBOXES
@@ -235,6 +245,23 @@ namespace pso2_logviewer
         {
             if (comBox_ColNames.Text == "") { return; }
             Mastermind.doSearch(dt_txtcontents, dgv_logContents, comBox_ColNames.Text, txtBox_ContentsFilter.Text);
+        }
+
+        private void About_This_Project()
+        {
+            var about_project = new AboutProject();
+
+            about_project.ShowDialog();
+        }
+
+        private void link_About_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            About_This_Project();
+        }
+
+        private void img_About_Click(object sender, EventArgs e)
+        {
+            About_This_Project();
         }
     }
 }

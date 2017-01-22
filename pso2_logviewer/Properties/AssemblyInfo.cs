@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("pso2_logviewer")]
+[assembly: AssemblyTitle("PSO2 Log Viewer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MangJo")]
-[assembly: AssemblyProduct("pso2_logviewer")]
+[assembly: AssemblyProduct("PSO2 Log Viewer")]
 [assembly: AssemblyCopyright("Copyright MangJo ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
