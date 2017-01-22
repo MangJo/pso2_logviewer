@@ -8,7 +8,7 @@ worth of 2 years so...
 
 The LogViewer only reads chat logs. I planned to add other kinds of logs before but I decided not to
 because I think the other logs seem to be useless unless you are the kind of person auditing almost
-any kind of expenses like AC, FUN points etc.
+any kind of expenses like AC, FUN points etc. and I stopped playing the game.
 
 The features of this app are simple:
 -Colored text according to the chat type.
